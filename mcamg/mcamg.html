@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="description" content="JSON models (test)"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="keywords" content="minecraft,models,3d,animation,json,block models,animated models,3d models"/>
+        <meta name="author" content="fzy_"/>
+        
+        <meta name="description" content="Animated model generator for minecraft json models. Created by fizzy_ (http://www.minecraftforum.net/members/fizzy81)" />
+        
+        <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+        <style type="text/css">
+
+* {
+    font-family: Roboto, 'Roboto', arial, sans-serif;
+    color: black;
+    font-weight: normal;
+}
+
+textarea {
+    resize: none;
+}
+
+.pixelated {
+    -ms-interpolation-mode: nearest-neighbor;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: pixelated;
+}
+
+body {
+    background-color: #FAFAFA;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: auto;
+    overflow-x: hidden;
+    margin: 0;
+    z-index: -5;
+}
+
+#wrapper {
+    width: 960px;
+    margin: auto;
+    position: relative;
+}
+
+footer {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: auto;
+    z-index: -4;
+    border-top: 10px #E0E0E0 solid;
+    background-color: #F5F5F5;
+    box-shadow: 0px 5px 10px -5px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+#cacheleft {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    position: absolute;
+    background-color: #FAFAFA;
+    box-shadow: 50px 0px 50px 10px #FAFAFA;
+    transform-origin: right;
+    transform: translateX(-1080px) scaleX(2);
+}
+
+#cacheright {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    position: absolute;
+    background-color: #FAFAFA;
+    box-shadow: -50px 0px 50px 10px #FAFAFA;
+    transform-origin: left;
+    transform: translateX(1080px) scaleX(2);
+}
+
+header {
+    background-color: #F5F5F5;
+    box-shadow: 0px 5px 10px -5px rgba(0,0,0,0.5);
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+
+header h1, header h2 {
+    margin: 10px;
+    margin-left: 45px;
+}
+
+nav {
+    background-color: #E0E0E0;
+    margin-bottom: 10px;
+}
+
+nav ul {
+    margin: 0;
+}
+
+nav li {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+nav img:hover {
+    transform: scale(1.1);
+}
+
+nav img {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+    margin: 5px;
+    border-radius: 3px;
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+}
+
+nav h3 {
+    margin: 5px;
+    margin-bottom: 0px;
+}
+
+#main_block {
+    padding: 40px;
+    padding-top: 20px;
+    width: 2420px;
+    transform: translateX(90px);
+    transition: transform 0.6s cubic-bezier(.4,.9,.75,1);
+}
+
+#main_block.output {
+    transform: translateX(-754px);
+}
+
+#main_block.generate {
+    transform: translateX(-1598px);
+}
+
+#inputs, #process, #output, #generate, #generated {
+    display: inline-block;
+    margin: 0px;
+    position: relative;
+    vertical-align: top;
+}
+
+#inputs {
+    width: 700px;
+}
+
+#frames, #timeline, #lastTab {
+    max-height: 545px;
+    overflow: auto;
+    background-color: white;
+    box-shadow: 0px 8px 15px -5px rgba(0,0,0,0.4);
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border: 1.5px #E0E0E0 solid;
+}
+
+.inputlabel, .inputfile, .inputdelay, .icontrash, #inputs h4 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#inputs h4 {
+    font-size: 2em;
+    font-weight: normal;
+    padding: 20px;
+    padding-right: 6px;
+    padding-left: 10px;
+    margin: 0px;
+    text-align: right;
+    width: 70px;
+}
+
+.inputlabel {
+    width: 100px;
+    text-align: right;
+    margin-right: 5px;
+}
+
+.inputfile {
+    width: 280px;
+    padding-right: 15px;
+    border-right: 2px #F5F5F5 solid;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.inputlabel label, .inputfile input, .inputdelay label, .inputdelay input {
+    display: inline-block;
+    padding: 5px;
+}
+
+.inputdelay {
+    padding: 5px;
+    padding-left: 25px;
+}
+
+@keyframes initAnim {
+    from {transform: perspective(1200px) rotateX(60deg) translateY(-50px); opacity: 0; margin-bottom: 0;}
+    to {transform: rotateX(0deg) translateY(0px); opacity: 1; margin-bottom: 25px;}
+}
+
+@keyframes textureinputAnim {
+    from {transform: perspective(1200px) rotateX(60deg) translateY(-15px); opacity: 0; margin-bottom: -7px;}
+    to {transform: rotateX(0deg) translateY(0px); opacity: 1; margin-bottom: 0px;}
+}
+
+.textureinput, .texturelabel {
+    animation: textureinputAnim 0.5s cubic-bezier(.4,.9,.75,1);
+}
+
+.frame, .deletedframe {
+    margin: 25px;
+    margin-left: 0px;
+    animation: initAnim 0.5s cubic-bezier(.4,.9,.75,1);
+    position: relative;
+}
+
+.deletecache {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 56px;
+    bottom: 0;
+}
+
+@keyframes deleteAnim {
+    from {opacity: 1;}
+    to {opacity: 0.2;}
+}
+
+.frame .inputlabel, .frame .inputfile, .frame .inputdelay, .frame h4 {
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+    opacity: 1;
+}
+
+.deletedframe .inputlabel, .deletedframe .inputfile, .deletedframe .inputdelay, .deletedframe h4 {
+    animation: deleteAnim 0.2s cubic-bezier(.4,.9,.75,1);
+    opacity: 0.2;
+}
+
+#inputscover, #outputscover, #generatecover {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    transition: z-index 0.6s steps(1, end);
+}
+
+#inputscover.covered, #outputscover.covered, #generatecover.covered {
+    z-index: 10;
+    transition: z-index 0.6s steps(1, start);
+}
+
+#process, #generate {
+    margin: 20px;
+    width: 96px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+    font-size: 1.2em;
+    text-align: center;
+}
+
+#process:hover, #generate:hover {
+    transform: scale(1.1);
+}
+
+#right-wrapper {
+    width: 420px;
+}
+
+#timeline_options, #general_options, #problem {
+    display: inline-block;
+    vertical-align: top;
+    margin: 12px;
+    margin-right: 0px;
+    width: 420px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    border-right: 2px #E0E0E0 solid;
+    border-bottom: 2px #E0E0E0 solid;
+}
+
+#timeline {
+    display: inline-block;
+    vertical-align: top;
+    width: 220px;
+    max-height: 545px;
+    overflow: auto;
+    margin: 12px;
+    margin-left: 0px;
+    margin-bottom: 8px;
+    padding: 4px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.timeline_section {
+    border-left: 2px #E0E0E0 solid;
+    padding-left: 20px;
+    background-color: transparent;
+    width: 150px;
+    height: 42px;
+    overflow: hidden;
+    cursor: pointer;
+    margin: 16px;
+    margin-right: 0;
+    position: relative;
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+    transform-origin: left;
+}
+
+.timeline_section.selected {
+    background-color: #F5F5F5;
+}
+
+.timeline_section:hover {
+    transform: scaleX(1.05);
+    background-color: #F5F5F5;
+}
+
+.timeline_section span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    height: 24px;
+}
+
+#action_icons div, #remove1, #add1 {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    transform: scale(0.5);
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+    opacity: 0.6;
+}
+
+#action_icons div:hover, #remove1:hover, #add1:hover {
+    opacity: 0.9;
+}
+
+#moveUp {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAEASURBVGhD1c9BDoJAEAVRb6XehXMYN0aPrF5Ah4ROCClgBppFLd6mmJD+p67r1DCaYDTBaILRBKMJRhOMJhhNMJpgNMFogtEEowlGE4wmGBO9BvQtBcYk/eG/wWEjMCYYH3/oCIw70fEhfQTGHZaOD6kjMG5Ex7+Lz6T10kZg3GDu+PPgsBEYGy0dH28OG4GxQc3x4VKkj8BYqeX4kD4CY4Utx4fUERhX7Dk+XIuUERhXTAe0Hh/6Ed9i/K9nQW9nYawQI7YeH8YjHkNrgrHSvdhzfOhH3CatGkYTjCYYTTCaYDTBaILRBKMJRhOMJhhNMJpgNMFogtEEowlGj+70BxvSLAFRSs9MAAAAAElFTkSuQmCC') scroll no-repeat center;}
+#moveDown {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAEmSURBVGhD1c+9bQJBFEVhQjrAtGMRWNDCFgmZKzGUYiLzrsQko7Oen50JbvBJ6AC79+2WZbGG0QlGJxidYHSC0QlGJxidYHSC0QlGJxidYHSC0QlGJxidYKx0Coes9TiGz6xVw1jhEp7hJ2w5QuMf4Td8vVsTjAXnoPF/b71HpPHpOV1HYCy4hfTSpPUIjb+H/DnXQL9fhbFgH75D/vLaIz4Cjdcz9Wz6zyqMFXqPGDpeMFZqPWL4eMHYoPaIKeMFY6PSERqvz/n3m8cLxg7/HTFtvGDstHZEbth4wbhB6Yih4wXjRmtHDB8vGAfIj5gyXjAOko6YNl4wDqTh08YLRicYnWB0gtEJRicYnWB0gtEJRicYnWB0gtEJRicYnWB0gtHHsnsBPtUshfuiTHIAAAAASUVORK5CYII=') scroll no-repeat center;}
+#duplicate {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAGbSURBVGhD7ZlBagMxEAT9GpNH7R+d+GEhJLknM3sKoky3TUuwxIe6VDPTkm1Y8J62bTs0KI8EyuKleC0+i5/JUL8NyT78R0FlM6Az2JDsT56KZkFnsCG54mfzFzqDDclowWxIPi+wEpL/4gIrnhPfxbXoLjrDDslx0Zivfk50181LkBwXjPnq50TzVozn2CE5Do/56udE81WM59ghOQ7fm6ewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpQCqzFAawelAJrcQCrB6XAWhzA6kEpsBYHsHpQCqzFAawelAJrcQCrB6XAWhzA6kEpsBYHsHpQCvp/+3H5bO76c1fRLx2oZCaXgs7y0AVWv+B4L84FneWhCzR9iX7p0F8tlSbo3f3J3zx8g/JIoDwO2+kX1QdQx73hNkkAAAAASUVORK5CYII=') scroll no-repeat center;}
+#delete {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAsVJREFUWEfV2Mtq1UAAxvHWy0J3orjw9hYt+iCi4tHXaPUBvG0VEdSdNyi4EcHnKL6AohtbdWtF0O8fMmGSfJlMTnICFn7QTObykZzMTLK2WCyWcUguyW15Kx/lu/wu8T9lnLslF4U2rq8kW5hwQR7IV/k70Be5J+fF9W3ZQuO0PBWujht8iAN5IqfEjVVjCxtuyA9xg43Bz+CauDErtrB0VJ6L63xKXM0j4jJ0BjwuH8R1uArvhTFbWVoFwpWbM1xAyNaVrB2UnonrYA7c7lqe2oHwQLiGc7oqVaY4HFPJT3GN5rQvJ6UVkHnONYj9kevyJirL9UK4Q/ThzsceSy0gK0TfJEzHV4T6h+W1uHoO4WhDW+a+vpBM5melCsjy5SrGuHKhPnJDxuEC/lzd2F0pArKI56ythGkOxPErcfXhwnGc8xP5LOs0YFfiKjhDQo4JF2zSiC2TO9mFMG7glxLqTBEO2zRkz+ZOpqRCThUOOzRmY+lO9iGMCzJVOOzSAdsedzKHCxkbEw57dDJ2E+pu6RThcPBfBBxzi7vCBZwbsuI0Fbd42Yek62l1ZcuGLB6SZaaZ1FSyzIrTpZhmeG91J7ukwoU6U4XcoiEv1e6kkxMuyFlx+mzQiM0CL9WuQmxIuGBMyE9SbBZwvyxMYbPZHChnGnGT+U1xdWN3pNoP8jkiZ8MaXrRzwwVxSPaVfRvWX3JGalt+3qhc5Rgdj9nyc+X6wuGhFLnigHwrGTNpT+WbnJBWQHALXaM5XZYqUxwuyLnVq/JIanlqByU+P/AZwnWwSu+k+bTbgOBDzpwhCXdMWllaBRGu5By3m9vaunKBLWzgweFzhOt8DJ7W2gPh2EKDbyV8juCN3w02BJMw81w1laTYwoRzwhs/L9Vu8BTWVpavYoXIZQszsMHYlG3ZkV3ZE64w+J8yzm3JhqyL6ythsfYPGpnt5BnLgOMAAAAASUVORK5CYII=') scroll no-repeat center;}
+#remove1 {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAP1JREFUaEPVz0EKwkAMheHeSr3LnEPcFD2yegFNoEKRv4tpkilv8cHwM4uXqbUmDaMSjEowKsGoBKMSjEowKsGoBKMSjEowKsFY6GHufy0EYxEf/1nMSwvDWGA9/udq6G8XjMlo/NtcDP3vgjFR6XiHMQmNf5m08Q5jgiHjHcagrfFnQ/9DMAYMHe8w7jR8vMO4w9b4k6H/aTB2Omy8w9iJDngamQPcYUdg3OmQIzAGDD8CY9DQIzAmGHYExiRDjsCYqPwIjMlKj8BYgI64GfrbBWOR9RH+pj/dMBby4WnjHUYlGJVgVIJRCUYlGJVgVIJRCUYlGJVgVIJRR5u+urosAd27vQMAAAAASUVORK5CYII=') scroll no-repeat center;}
+#add1 {background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAOlJREFUaEPVz7ENAkEMRNHrCuhl60AkCEoGGgBbOrIfeddzmuAl38l4G2NYw+gEoxOMTjA6wegEoxOMTjA6wegEoxOMTjBOeO7o1gJjUQ7/7mRPYCy4hf946RMYC07hFeRPYCw65AmME+RPYJwkfQLjArInMC4ieQLjQu1PYFys9QmMDdqewNggH3gHywfaxieMC51D2/iEcZH28QnjApLxCeOkS5CMTxgnSMcnjEU5/hNk4xPGgkPGJ4wF1yAfnzAW3YN0fMI44RFk4xNGJxidYHSC0QlGJxidYHSC0QlGJxidYHSC0cfYfnkoLAEMZxWVAAAAAElFTkSuQmCC') scroll no-repeat center;}
+
+#remove1, #add1 {
+    transform: translateY(18px) scale(0.7);
+}
+
+#action_icons {
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 204px;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+    
+#output {
+    width: 700px;
+}
+
+#generated {
+    width: 700px;
+}
+
+#lastTab {
+    margin-top: 15px;
+    padding: 24px;
+    text-align: center;
+}
+
+#lastTab a {
+    display: inline-block;
+    background-color: white;
+    width: 198px;
+    border-bottom: 2px #E0E0E0 solid;
+    padding-top: 14px;
+    padding-bottom: 0;
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-decoration: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#lastTab a:hover {
+    background-color: #F5F5F5;
+    transform: scale(1.1);
+}
+
+#downloadmodel h4, #downloadtexture h4, #downloadmcmeta h4 {
+    text-align: right; font-size: 0.8em; margin: 0;
+}
+
+#downloadmodel, #downloadtexture, #downloadmcmeta {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+    overflow: hidden;
+    height: 220px;
+    margin: 6px;
+}
+
+#problem {
+    display: block;
+    width: auto;
+    margin-top: 32px;
+}
+
+.downloadicon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 48px;
+    height: 48px;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAEtSURBVGhD1dQxbsNADEVBH1SHyc2dsDOgESNSuwZYTPMK6m+j13EcozFOwjgJ4ySMkzBOwtj0LtKNMsYmjczoRhljk0ZmdKOMsUkjM7pRxtikkRndKGNs0siMbpQxNmlkRjfKGJs0MqMbZYxNGpnRjTLGJo3M6EYZY5NGZnSjjLFJIzO6UcZ44eePhuwQ39KGE8bENx5xe3xg/MfOR5TGB8YbdjyiPD4w3rTyEa3xgbFgxSPa4wNj0ZNHPBofGBs6j3g8PjA2VR6xZHxgfODOI5aND4wPZY9YOj4wLqBHLB8fGBf5fMSW8YFxoRi+bXxgnIRxEsZJGCdhvPD5S/wGbThhvKCP7KQNJ4wX9JGdtOGE8YI+spM2nDBOwjgJ4ySMkzBOwjgJ4ySMcxyvX3xjdvD5nfXKAAAAAElFTkSuQmCC') scroll no-repeat center;
+    transform: scale(0.6);
+    opacity: 0.6;
+}
+
+.overwritten {
+    display: none;
+}
+
+#resetEverything {
+    position: absolute;
+    display: inline-block; margin: 0; padding: 0; text-decoration: none;
+    width: 70px;
+    height: 70px;
+    background: url("data:image/png;base64,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") scroll no-repeat center;
+    transform: scale(0.4);
+    opacity: 0.6;
+    right: 8px;
+    top: -16px;
+    transition: all 0.2s cubic-bezier(.4,.9,.75,1);
+}
+
+#resetEverything:hover {
+    opacity: 0.8;
+}
+
+button {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+        </style>
+        <link rel="icon" type="image/png" href="data:image/png;base64,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" />
+        
+        <title>Animated model generator</title>
+        
+    </head>
+    <body>
+        <div id="wrapper">
+            <header>
+                <nav>
+                    <ul>
+                        <li><h3>Created by fizzy_</h3></li>
+                        <li style="margin-left: 620px;">
+                            <ul>
+                                <li><a href="https://www.youtube.com/channel/UCA7DtUjOwq5m0dT6g-jz0Og" target="_blank" title="youtube"><img src="data:image/png;base64,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" alt="youtube"></a></li>
+                                <li><a href="http://www.minecraftforum.net/members/fizzy81" target="_blank" title="minecraft forums"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAQvSURBVHhe7dpJq1xlFIXh+jVCBhnaELz2DUYHigYbFGMUY3NFxSg4UUREEISgYCaCDaKxw9hCQAw6cOKfcm1WDY7v2RtOIOBkHZ5JwV77+2pVIHVzszvzy3F47bd74JWf74Knv7x+ixd/uB0e/+RqOPzulrU3/ngAcCV57pub4PRXB2vPfn0jPPHZtXDv2avghe9vXUtZKWsBTQmaEjQlqMlSVspaQFOCpgRNCWqylHU5Zb36692Ae8t7Fx+Bty7ct/b2T/fDwwdH4JnzN8Cpz69bQ6Hy4V9PwtlLJwGfqKEXwbsT9CvPf3vzWsoqaEpQk6WsgqYENVnKKmhKUJOlrIKmBDVZyipoSlCT7d7//THA25OP/zmEp744toa/oQV75KULdwAGDN9m5M1LJ+CDP0/Bub9Pr2GzPHjuKJz89BpAxFJWylrAZkFTgqYEEUtZKWsBmwVNCZoSRCxlXU5ZeC2HqwcDk5d/vBMwsB2+NwgGBD/lCgbs9RPHAAMtRCxl9RCxlNVDxFJWDxFLWT1ELGX1ELGU1UPEdh8dHgdMCAbk4juPruE8QUqweYI9G+0/2/8+2Cy4kmCPIGIpq2CPIGIpq2CPIGIpq2CPIGIpq2CPIGIpq2CPIGI7vBbEBKsn2CMYEGzeDptbiBhmNsKfA0tZPdRkKauHmixl9VCTpawearKU1UNNtsNrQWy7d1cPBlo4fYKUYGCClODzEwwIBixlFQwIBixlFQwIBixlFQwIBixlFQwIBixlFQwIBqz56rCG4ydY3cLmCVKCLwSCgQk2txCZpKyCyCRlFUQmKasgMklZBZFJyiqITFJWQWSy6d/g1xAxzAgGBAOCCgwzgj0tRLbD6YIBS1kFpwsGLGUVnC4YsJRVcLpgwFJWwemCAUtZBacLBqz56oAbCBYJIhOkWohccfh+00JE0IClrIKIoAFLWQURQQOWsgoiggYsZRVEBA1YyiqICBqwTWVhQHDYBCnBgOAsQ6GCVAsRw+bW/lcGiwfXtpRV9g0tHlzbUlbZN7R4cG1LWWXf0OLBtS1llX1DiwfXtpRV9g0tHlzbruQP0mt4M4I9gojt/6fx4sFAC5sN3QlSgoggYimrDyJiKasPImIpqw8iYimrDyJiKasPImIpqw8iYs33LEwIVgsihpkWuhMs+V/gSpOUVXClScoquNIkZRVcaZKyCq40SVkFV5o0ZeHtCQYmZx66DTAg2DxBSvD5Cd6JYMCwR5ASnD5JWQWnT1JWwemTlFVw+iRlFZw+SVkFp082/SCN4wWHGVKClGBAMGDY3MIewRsxzLQQmaSsgsgkZRVEJimrIDJJWQWRScoqiEw2lYVbCiIT7JH9L3wXDwYMe1qITJBqISL48CxlFUQENVnKKogIarKUVRAR1GQpqyAiqMlSVkFEUJOlrIKIoKZycORfxUye29bbysUAAAAASUVORK5CYII=" alt="minecraft forums"></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <a style="display: block; margin: 0; padding: 0; text-decoration: none" href="">
+                    <h1 style="font-weight: bold">Minecraft animated model generator - V1.2.0</h1>
+                    <h2>Combine several frames into a single animated model</h2>
+                </a>
+            </header>
+            <section id="main_block">
+                <div id="inputs">
+                    <h3 style="margin: 0; margin-top: 10px; font-weight: bold; font-size: 1.3em;">Load frames</h3>
+                    <h3 id="framesCount" style="margin-bottom: 0px; margin-left: 40px; font-size: 1.1em; display: inline-block;">Loaded : 0</h3>
+                    <button onclick="newframe()" style="display: block; margin-left: 560px; cursor: pointer;" id="newframe">New frame</button>
+                    <section id="frames">
+                        
+                    </section>
+                    <h3 id="warning">Please enable javascript!</h3>
+                    <div id="inputscover"></div>
+                </div>
+                <div id="process" onclick="process()">Settings</div>
+                <div id="output">
+                    <h3 style="margin: 0; margin-top: 10px; font-weight: bold; font-size: 1.3em;">Options</h3>
+                    <h3 id="framesCount2" style="margin-left: 40px; font-size: 1.1em; display: inline-block;">Loaded : 0</h3>
+                    <div id="time-display" style="margin-left: 40px;">Animation duration : 0</div>
+                    <section id="timeline" style="display: none;">
+                        
+                    </section>
+                    <div id="right-wrapper" style="display: none;">
+                        <div id="timeline_options">
+                            <h3 style="margin: 0px; font-size: 1.4em;">Frame</h3>
+                            <div id="timeline_actions" style="position: relative;">
+                                <h4 id="framenameinthetimeline" style="margin: 15px; font-size: 1.2em; display: inline-block; vertical-align: middle; max-width: 180px; overflow: hidden;"></h4>
+                                <div id="action_icons">
+                                    <div id="moveUp" onclick="up()" title="move this frame up"></div>
+                                    <div id="moveDown" onclick="down()" title="move this frame down"></div>
+                                    <div id="duplicate" onclick="duplicate()" title="duplicate this frame"></div>
+                                    <div id="delete" onclick="del()" title="delete this frame"></div>
+                                </div>
+                                <div id="frame_options" style="padding: 20px;">
+                                    <label style="-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;">Duration : <div id="remove1" title="-1"></div><div id="framedurationinthetimeline" style="display: inline-block; padding: 5px; text-align: center;"></div><div id="add1" title="+1"></div></label>
+                                    <div id="framefiles" style="margin-top: 25px; background-color: white; box-shadow: 0px 4px 10px -3px rgba(0,0,0,0.4); height: 128px; border: 1.5px #E0E0E0 solid; overflow: hidden;">
+                                        <img id="frametextureinthetimeline" src="" alt="frametexture" style="height: 128px; width: 128px; vertical-align: top; border-width: 0px;" class="pixelated"/>
+                                        <pre id="framejsoninthetimeline" style="font-size: 0.8em; display: inline-block; height: 128px; width: 245px; overflow: hidden; margin: 0px;"></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="general_options">
+                            <h3 style="margin: 0px; font-size: 1.4em;">General</h3>
+                            <div style="padding: 20px; padding-bottom: 10px;">
+                                <section style="display: inline-block;">
+                                    <label for="modelName" style="display: block;">Model name : </label><br/>
+                                    <label for="replaceBlock" style="display: block;">Replace model : </label>
+                                </section>
+                                <section style="display: inline-block; width: 120px; margin-left: 10px;">
+                                    <input type="text" id="replaceBlock" style="width: 14em;"/>
+                                    <input type="text" id="modelName" style="width: 14em;"/>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="outputscover" class="covered"></div>
+                </div>
+                <div id="generate" onclick="generated()">Finish</div>
+                <div id="generated">
+                    <h3 style="margin: 0; margin-top: 10px; font-weight: bold; font-size: 1.3em;">Generated model</h3>
+                    <h3 id="log1" style="margin-left: 40px; font-size: 1.1em; display: inline-block;">No frame loaded</h3>
+                    <div id="log2" style="margin-left: 40px;"></div>
+                    <div id="lastTab" style="display: none;">
+                        <div id="downloadmodel">
+                            <a title="download the json model">Model <span class="downloadicon"></span></a>
+                            <h4>.json </h4>
+                            <textarea id="previewjson" style="width: 192px; height: 106px;"></textarea>
+                        </div>
+                        <div id="downloadtexture">
+                            <a title="download the new texture">Texture <span class="downloadicon"></span></a>
+                            <h4>.png </h4>
+                            <img id="previewtexture"/>
+                        </div>
+                        <div id="downloadmcmeta">
+                            <a title="download the mcmeta file">Mcmeta <span class="downloadicon"></span></a>
+                            <h4>.mcmeta </h4>
+                            <textarea id="previewmcmeta" style="width: 192px; height: 108px;"></textarea>
+                        </div>
+                    </div>
+                    <div id="problem" style="display: none">
+                        <p><br/>If you encounter any bug, please let me know <a href="http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-tools/2478389-block-models-animated-minecraft-model-generator" target="_blank">here</a>, thank you :D<br/><br/>Note: If the download buttons don't work, simply copy and paste the text from the preview boxes and download the texture with right click > save image as. Make sure to name the json model "<span id="jsonmodelnameend"></span>", the texture "<span id="texturenameend"></span>" and the .mcmeta file "<span id="mcmetanameend"></span>".</p>
+                    </div>
+                    <div id="generatecover"></div>
+                </div>
+            </section>
+            <footer>
+                <span>
+                    Need help? Click <a href="http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-tools/2478389-block-models-animated-minecraft-model-generator" target="_blank">here</a>!
+                </span>
+                <a title="reset" href="" id="resetEverything"></a>
+            </footer>
+            <div id="cacheleft"></div>
+            <div id="cacheright"></div>
+        </div>
+        <script type="text/javascript">
+
+var warning = document.getElementById('warning');
+var parentwarning = warning.parentNode;
+parentwarning.removeChild(warning);
+
+iconDelete = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAsVJREFUWEfV2Mtq1UAAxvHWy0J3orjw9hYt+iCi4tHXaPUBvG0VEdSdNyi4EcHnKL6AohtbdWtF0O8fMmGSfJlMTnICFn7QTObykZzMTLK2WCyWcUguyW15Kx/lu/wu8T9lnLslF4U2rq8kW5hwQR7IV/k70Be5J+fF9W3ZQuO0PBWujht8iAN5IqfEjVVjCxtuyA9xg43Bz+CauDErtrB0VJ6L63xKXM0j4jJ0BjwuH8R1uArvhTFbWVoFwpWbM1xAyNaVrB2UnonrYA7c7lqe2oHwQLiGc7oqVaY4HFPJT3GN5rQvJ6UVkHnONYj9kevyJirL9UK4Q/ThzsceSy0gK0TfJEzHV4T6h+W1uHoO4WhDW+a+vpBM5melCsjy5SrGuHKhPnJDxuEC/lzd2F0pArKI56ythGkOxPErcfXhwnGc8xP5LOs0YFfiKjhDQo4JF2zSiC2TO9mFMG7glxLqTBEO2zRkz+ZOpqRCThUOOzRmY+lO9iGMCzJVOOzSAdsedzKHCxkbEw57dDJ2E+pu6RThcPBfBBxzi7vCBZwbsuI0Fbd42Yek62l1ZcuGLB6SZaaZ1FSyzIrTpZhmeG91J7ukwoU6U4XcoiEv1e6kkxMuyFlx+mzQiM0CL9WuQmxIuGBMyE9SbBZwvyxMYbPZHChnGnGT+U1xdWN3pNoP8jkiZ8MaXrRzwwVxSPaVfRvWX3JGalt+3qhc5Rgdj9nyc+X6wuGhFLnigHwrGTNpT+WbnJBWQHALXaM5XZYqUxwuyLnVq/JIanlqByU+P/AZwnWwSu+k+bTbgOBDzpwhCXdMWllaBRGu5By3m9vaunKBLWzgweFzhOt8DJ7W2gPh2EKDbyV8juCN3w02BJMw81w1laTYwoRzwhs/L9Vu8BTWVpavYoXIZQszsMHYlG3ZkV3ZE64w+J8yzm3JhqyL6ythsfYPGpnt5BnLgOMAAAAASUVORK5CYII=";
+iconUp = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAEASURBVGhD1c9BDoJAEAVRb6XehXMYN0aPrF5Ah4ROCClgBppFLd6mmJD+p67r1DCaYDTBaILRBKMJRhOMJhhNMJpgNMFogtEEowlGE4wmGBO9BvQtBcYk/eG/wWEjMCYYH3/oCIw70fEhfQTGHZaOD6kjMG5Ex7+Lz6T10kZg3GDu+PPgsBEYGy0dH28OG4GxQc3x4VKkj8BYqeX4kD4CY4Utx4fUERhX7Dk+XIuUERhXTAe0Hh/6Ed9i/K9nQW9nYawQI7YeH8YjHkNrgrHSvdhzfOhH3CatGkYTjCYYTTCaYDTBaILRBKMJRhOMJhhNMJpgNMFogtEEowlGj+70BxvSLAFRSs9MAAAAAElFTkSuQmCC";
+iconDown = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAEmSURBVGhD1c+9bQJBFEVhQjrAtGMRWNDCFgmZKzGUYiLzrsQko7Oen50JbvBJ6AC79+2WZbGG0QlGJxidYHSC0QlGJxidYHSC0QlGJxidYHSC0QlGJxidYKx0Coes9TiGz6xVw1jhEp7hJ2w5QuMf4Td8vVsTjAXnoPF/b71HpPHpOV1HYCy4hfTSpPUIjb+H/DnXQL9fhbFgH75D/vLaIz4Cjdcz9Wz6zyqMFXqPGDpeMFZqPWL4eMHYoPaIKeMFY6PSERqvz/n3m8cLxg7/HTFtvGDstHZEbth4wbhB6Yih4wXjRmtHDB8vGAfIj5gyXjAOko6YNl4wDqTh08YLRicYnWB0gtEJRicYnWB0gtEJRicYnWB0gtEJRicYnWB0gtHHsnsBPtUshfuiTHIAAAAASUVORK5CYII=";
+iconDuplicate = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAGbSURBVGhD7ZlBagMxEAT9GpNH7R+d+GEhJLknM3sKoky3TUuwxIe6VDPTkm1Y8J62bTs0KI8EyuKleC0+i5/JUL8NyT78R0FlM6Az2JDsT56KZkFnsCG54mfzFzqDDclowWxIPi+wEpL/4gIrnhPfxbXoLjrDDslx0Zivfk50181LkBwXjPnq50TzVozn2CE5Do/56udE81WM59ghOQ7fm6ewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpIqkGVp7B6SKpBlaewekiqQZWnsHpQCqzFAawelAJrcQCrB6XAWhzA6kEpsBYHsHpQCqzFAawelAJrcQCrB6XAWhzA6kEpsBYHsHpQCvp/+3H5bO76c1fRLx2oZCaXgs7y0AVWv+B4L84FneWhCzR9iX7p0F8tlSbo3f3J3zx8g/JIoDwO2+kX1QdQx73hNkkAAAAASUVORK5CYII=";
+iconPlus = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAOlJREFUaEPVz7ENAkEMRNHrCuhl60AkCEoGGgBbOrIfeddzmuAl38l4G2NYw+gEoxOMTjA6wegEoxOMTjA6wegEoxOMTjBOeO7o1gJjUQ7/7mRPYCy4hf946RMYC07hFeRPYCw65AmME+RPYJwkfQLjArInMC4ieQLjQu1PYFys9QmMDdqewNggH3gHywfaxieMC51D2/iEcZH28QnjApLxCeOkS5CMTxgnSMcnjEU5/hNk4xPGgkPGJ4wF1yAfnzAW3YN0fMI44RFk4xNGJxidYHSC0QlGJxidYHSC0QlGJxidYHSC0cfYfnkoLAEMZxWVAAAAAElFTkSuQmCC";
+iconMinus = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAP1JREFUaEPVz0EKwkAMheHeSr3LnEPcFD2yegFNoEKRv4tpkilv8cHwM4uXqbUmDaMSjEowKsGoBKMSjEowKsGoBKMSjEowKsFY6GHufy0EYxEf/1nMSwvDWGA9/udq6G8XjMlo/NtcDP3vgjFR6XiHMQmNf5m08Q5jgiHjHcagrfFnQ/9DMAYMHe8w7jR8vMO4w9b4k6H/aTB2Omy8w9iJDngamQPcYUdg3OmQIzAGDD8CY9DQIzAmGHYExiRDjsCYqPwIjMlKj8BYgI64GfrbBWOR9RH+pj/dMBby4WnjHUYlGJVgVIJRCUYlGJVgVIJRCUYlGJVgVIJRR5u+urosAd27vQMAAAAASUVORK5CYII=";
+
+/*------------------------------------*\
+    inputs tab functions
+\*------------------------------------*/
+
+//generate the array with all the data from the files
+
+function generate() {
+    var frames = document.querySelectorAll('.frame');
+    var framesList = [];
+    var idfix = 0;
+    
+    var load = true
+    for (var i = 0; i < inputList.length; i++) {
+        if (globalmodel['frame' + (i+1)] == "" || Object.keys(frameTextures['frame' + (i+1)]).length == 0) {
+            load = false;
+        }
+    }
+    
+    if (load) {
+        for (var i = 0; i < frames.length; i++ ) {
+            
+            var framenode = frames[i];
+            var frameid = i - idfix;
+            var frameinputid = parseInt(framenode.id.substring(5)) -1;
+            var file = document.querySelector('#' + framenode.id + ' .model');
+            file = file.files[0];
+            
+            if (file != undefined) {
+                var framename = file.name.split('.json')[0];
+            } else {
+                var framename = '';
+            }
+            
+            var frame = {};
+            frame['id'] = frameid;
+            frame['name'] = framename;
+            frame['inputid'] = frameinputid; //option
+            
+            frame['model'] = inputList[frameinputid]['model'];
+            frame['texture'] = inputList[frameinputid]['texture'];
+            frame['delay'] = globaldelay[frameinputid];
+            
+            if (frame['name'] != '' && frame['model'] != '' && frame['texture'] != '') {
+                framesList.push(frame);
+            } else {
+                idfix += 1;
+            }
+        }
+        return framesList;
+    } else {
+        return [];
+    }
+    
+}
+
+framesCount = 0;
+framesDisplay = 0
+
+//add frame
+
+function newframe() {
+    framesCount += 1;
+    framesDisplay += 1;
+    document.getElementById('framesCount').innerHTML = 'Loaded : ' + framesDisplay;
+    document.getElementById('framesCount2').innerHTML = 'Loaded : ' + framesDisplay;
+    
+    var frame = document.createElement('div');
+    frame.className = 'frame';
+    frame.id = 'frame' + framesCount;
+    
+    var framenumber = document.createElement('h4');
+    framenumber.appendChild(document.createTextNode(framesCount + '.'));
+    frame.appendChild(framenumber);
+    
+    var labels = document.createElement('div');
+    labels.className = 'inputlabel';
+    var label1 =document.createElement('label');
+    label1.appendChild(document.createTextNode('JSON file :'));
+    label1.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    labels.appendChild(label1);
+    labels.appendChild(document.createElement('br'));
+    var label2 = document.createElement('label');
+    label2.appendChild(document.createTextNode('Textures :'));
+    label2.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    labels.appendChild(label2);
+    frame.appendChild(labels);
+    
+//inputs --------------------------------------------------//
+    
+    var inputfiles = document.createElement('div');
+    inputfiles.className = 'inputfile';
+    var model = document.createElement('input');
+    model.setAttribute('type', 'file');
+    model.setAttribute('name', 'model');
+    model.setAttribute('accept', '.json');
+    model.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    model.setAttribute('onchange', "loadmodel('" + frame.id + "')");
+    model.className = 'model';
+    inputfiles.appendChild(model);
+    
+    inputfiles.appendChild(document.createElement('br'));
+    
+    var textureoptions = document.createElement('span');
+    var addtexture = document.createElement('button');
+    var removetexture = document.createElement('button');
+    var copytexture = document.createElement('button');
+    
+    addtexture.appendChild(document.createTextNode('Add'));
+    removetexture.appendChild(document.createTextNode('Remove last'));
+    copytexture.appendChild(document.createTextNode('Copy to all'));
+    addtexture.setAttribute('style', 'cursor: pointer;');
+    removetexture.setAttribute('style', 'margin-left: 9px; cursor: pointer;');
+    copytexture.setAttribute('style', 'margin-left: 9px; cursor: pointer;');
+    
+    addtexture.setAttribute('onclick', "addtextureinput('" + frame.id + "')");
+    removetexture.setAttribute('onclick', "removetextureinput('" + frame.id + "')");
+    copytexture.setAttribute('onclick', "copytexturestoall('" + frame.id + "')");
+    
+    copytexture.id = 'copy' + frame.id;
+    copytexture.className = 'copytexture';
+    
+    textureoptions.appendChild(addtexture);
+    textureoptions.appendChild(removetexture);
+    textureoptions.appendChild(copytexture);
+    
+    frameTextures[frame.id] = {};
+    
+    textureoptions.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    
+    inputfiles.appendChild(textureoptions);
+    
+    frame.appendChild(inputfiles);
+    
+//end --------------------------------------------------//
+    
+    var framedelay = document.createElement('div');
+    framedelay.className = 'inputdelay';
+    var labeldelay = document.createElement('label');
+    labeldelay.appendChild(document.createTextNode('Delay : '));
+    var delayvalue = document.createElement('input');
+    delayvalue.setAttribute('type', 'number');
+    delayvalue.setAttribute('min', '1');
+    delayvalue.setAttribute('step', '1');
+    delayvalue.setAttribute('value', '1');
+    delayvalue.setAttribute('name', 'framedelay');
+    delayvalue.setAttribute('style', 'width: 3em;');
+    delayvalue.setAttribute('onchange', "loaddelay('" + frame.id + "')");
+    delayvalue.className = 'delay';
+    labeldelay.appendChild(delayvalue);
+    framedelay.appendChild(labeldelay);
+    frame.appendChild(framedelay);
+    
+    document.getElementById('frames').appendChild(frame);
+    
+    inputList.push({'model': '', 'texture': '', 'delay': 1});
+    
+    globaltextures[frame.id] = 0;
+    var slot = parseInt(frame.id.substring(5)) - 1;
+    globaldelay[slot] = 1;
+}
+
+function addtextureinput(fid) {
+    
+    globaltextures[fid] += 1;
+    
+    var inputfiles = document.querySelector('#' + fid + ' .inputfile');
+    var texture = document.createElement('input');
+    texture.setAttribute('type', 'file');
+    texture.setAttribute('name', 'texture');
+    texture.setAttribute('accept', '.png');
+    texture.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    texture.setAttribute('onchange', "loadtexture('" + fid + "','f" + fid + "t" + globaltextures[fid] + "')");
+    texture.id = "f" + fid + "t" + globaltextures[fid];
+    texture.className = 'textureinput';
+    inputfiles.appendChild(document.createElement('br'));
+    inputfiles.appendChild(texture);
+    
+    var labels = document.querySelector('#' + fid + ' .inputlabel');
+    labels.appendChild(document.createElement('br'));
+    var label = document.createElement('label');
+    label.appendChild(document.createTextNode( globaltextures[fid] + '.'));
+    label.setAttribute('style', 'display: inline-block; padding: 5px; height: 21px;');
+    label.className = "texturelabel"
+    labels.appendChild(label);
+}
+
+function removetextureinput(fid) {
+    var inputfiles = document.querySelector('#' + fid + ' .inputfile');
+    var labels = document.querySelector('#' + fid + ' .inputlabel');
+    
+    var label = labels.lastChild;
+    var input = inputfiles.lastChild;
+    
+    if (label.className == 'texturelabel' && input.className == 'textureinput') {
+        
+        var file = input.files[0];
+        if (file != undefined) {
+            delete frameTextures[fid][file.name.split('.png')[0]];
+        }
+        
+        inputfiles.removeChild(input);
+        inputfiles.removeChild(inputfiles.lastChild);
+        labels.removeChild(label);
+        labels.removeChild(labels.lastChild);
+        globaltextures[fid] -= 1;
+    }
+    
+    if (texturelink) {
+        var copythis = frameTextures[fid];
+        for (var name in frameTextures) {
+            frameTextures[name] = copythis;
+        }
+    }
+}
+
+function copytexturestoall(fid) {
+    var buttons = document.querySelectorAll('.copytexture');
+    for (var i = 0; i < buttons.length; i++) {
+        var b = buttons[i];
+        if (b.id != 'copy' + fid) {
+            b.className += ' overwritten';
+            var parent = b.parentNode;
+            parent.childNodes[0].className += ' overwritten';
+            parent.childNodes[1].className += ' overwritten';
+            var msg = document.createElement('span');
+            msg.appendChild(document.createTextNode(' Linked to frame ' + fid.split('frame').join("")));
+            msg.setAttribute('style','font-size: 13.3333px;');
+            parent.appendChild(msg);
+        }
+    }
+    
+    var frames = document.querySelectorAll('.frame');
+    for (var i = 0; i < frames.length; i++) {
+        var frame = frames[i];
+        if (frame.id != fid) {
+            
+            var inputs = document.querySelectorAll('#' + frame.id + ' .textureinput');
+            for (var j = 0; j < inputs.length; j++) {
+                removetextureinput(frame.id);
+            }
+            
+        }
+    }
+    
+    var button = document.getElementById('copy' + fid);
+    button.innerHTML = 'Cancel';
+    button.setAttribute('onclick','undotexturetoall("' + fid + '");');
+    
+    var newframe = document.getElementById('newframe');
+    newframe.setAttribute('onclick','undotexturetoall("' + fid + '"); newframe()');
+    
+    var copythis = frameTextures[fid];
+    for (var name in frameTextures) {
+        frameTextures[name] = copythis;
+    }
+    
+    texturelink = true;
+    
+    console.log(frameTextures);
+}
+
+function undotexturetoall(fid) {
+    
+    var buttons = document.querySelectorAll('.copytexture');
+    for (var i = 0; i < buttons.length; i++) {
+        var b = buttons[i];
+        if (b.id != 'copy' + fid) {
+            b.className = b.className.split(' overwritten').join("");
+            var parent = b.parentNode;
+            parent.childNodes[0].className = parent.childNodes[0].className.split(' overwritten').join("");
+            parent.childNodes[1].className = parent.childNodes[1].className.split(' overwritten').join("");
+            parent.removeChild(parent.lastChild);
+        }
+    }
+    
+    var button = document.getElementById('copy' + fid);
+    button.innerHTML = 'Copy to all';
+    button.setAttribute('onclick','copytexturestoall("'+fid+'");');
+    
+    var newframe = document.getElementById('newframe');
+    newframe.setAttribute('onclick','newframe()');
+    
+    for (var name in frameTextures) {
+        if (name != fid) {
+            frameTextures[name] = {};
+        }
+    }
+    
+    texturelink = false;
+}
+
+inputList = [];
+globaltextures = {};
+frameTextures = {};
+
+texturelink = false;
+
+//load the different inputs
+
+globalmodel = {}
+
+globaldelay = {}
+
+function loaddelay(fid) {
+    
+    var frame = document.getElementById(fid)
+    var input = document.querySelector('#' + fid + ' .delay');
+    var slot = parseInt(frame.id.substring(5)) - 1;
+    var delay = input.value;
+    
+    globaldelay[slot] = parseInt(delay);
+}
+
+function loadmodel(fid) {
+    
+    var frame = document.getElementById(fid)
+    var input = document.querySelector('#' + fid + ' .model');
+    var file = input.files[0];
+    
+    if (file != undefined) {
+    
+        var reader = new FileReader();
+        reader.addEventListener('load', function() {
+            
+            var model = reader.result;
+            globalmodel[fid] = model;
+            
+        }, false);
+        
+        reader.readAsText(file);
+        
+    } else {
+        globalmodel[fid] = "";
+    }
+}
+
+function loadtexture(fid,tid) {
+    
+    var input = document.getElementById(tid);
+    var file = input.files[0];
+    
+    if (file != undefined) {
+    
+        var name = file.name
+        
+        var reader = new FileReader();
+        reader.addEventListener('load', function() {
+            
+            var texture = reader.result;
+            frameTextures[fid][file.name.split('.png')[0]] = texture;
+            
+            if (texturelink) {
+                var copythis = frameTextures[fid];
+                for (var name in frameTextures) {
+                    frameTextures[name] = copythis;
+                }
+            }
+            
+        }, false);
+        reader.readAsDataURL(file);
+    }
+}
+
+newframe();
+FL = [];
+activeFrame = 0;
+
+function mergeTextures() {
+    
+    var load = true
+    for (var i = 0; i < inputList.length; i++) {
+        if (globalmodel['frame' + (i+1)] == "" || Object.keys(frameTextures['frame' + (i+1)]).length == 0) {
+            load = false;
+        }
+    }
+    
+    if (load && inputList.length > 0) {
+    
+        for (var i = 0; i < inputList.length; i++) {
+            
+            var frame = inputList[i];
+            var model = JSON.parse(globalmodel['frame'+(i+1)]);
+            var textures = frameTextures['frame'+(i+1)];
+        
+            var base_width = 16;
+            var base_height = 16;
+            
+            var size = 16;
+            
+            var num = Object.keys(textures).length;
+            
+            for (var name in textures) {
+                var texture = textures[name];
+                var texturebuffer = new Image();
+                texturebuffer.src = texture;
+                if (texturebuffer.width > base_width) { base_width = texturebuffer.width;}
+                if (texturebuffer.height > base_height) { base_height = texturebuffer.height;}
+            }
+            
+            var pixels = base_height * base_width * num;
+            while (size*size < pixels) {size *= 2;}
+            
+            var canvas = document.createElement('canvas');
+            canvas.setAttribute('width', size);
+            canvas.setAttribute('height', size);
+            var ctx = canvas.getContext('2d');
+            
+            var x = 0;
+            var y = 0;
+            
+            var texture_summary = {};
+            
+            for (var name in textures) {
+                var texture = new Image();
+                texture.setAttribute('src',textures[name]);
+                ctx.drawImage(texture,x,y);
+                texture_summary[name] = [x,y,texture.width,texture.height];
+                x += base_width;
+                if (x+base_width>size) {
+                    x = 0;
+                    y += base_height;
+                }
+            }
+            
+            for (var e = 0; e < model['elements'].length; e++) {
+                for (var face in model['elements'][e]['faces']) {
+                    
+                    var name = model['elements'][e]['faces'][face]['texture'];
+                    if (name.charAt(0) == '#') {
+                        name = model['textures'][name.split('#').slice(-1)];
+                        name = name.split('/').slice(-1);
+                    } else {
+                        name = name.split('#').slice(-1).split('/').slice(-1);
+                    }
+                    
+                    if (name in texture_summary) {
+                        
+                        var minx = model['elements'][e]['faces'][face]['uv'][0];
+                        var miny = model['elements'][e]['faces'][face]['uv'][1];
+                        
+                        var maxx = model['elements'][e]['faces'][face]['uv'][2];
+                        var maxy = model['elements'][e]['faces'][face]['uv'][3];
+                        
+                        var x = texture_summary[name][0];
+                        var y = texture_summary[name][1];
+                        
+                        var width = texture_summary[name][2];
+                        var height = texture_summary[name][3];
+                        
+                        model['elements'][e]['faces'][face]['uv'][0] = (minx * (width/base_width) * (base_width/16) + x) / size * 16;
+                        model['elements'][e]['faces'][face]['uv'][1] = (miny * (height/base_height) * (base_height/16) + y) / size * 16;
+                        
+                        model['elements'][e]['faces'][face]['uv'][2] = (maxx * (width/base_width) * (base_width/16) + x) / size * 16;
+                        model['elements'][e]['faces'][face]['uv'][3] = (maxy * (height/base_height) * (base_height/16) + y) / size * 16;
+                    }
+                }
+            }
+        
+            inputList[i]['texture'] = canvas.toDataURL('image/png');
+            inputList[i]['model'] = JSON.stringify(model, cleanJson, 4).replace(/\\"/g, '"').replace(/,/g, ', ').replace(/\}clean"/g, ' }').replace(/"clean\{/g, '{ ').replace(/\]clean"/g, ' ]').replace(/"clean\[/g, '[ ').replace(/"\:"/g, '": "').replace(/"\:\[/g, '": [').replace(/"east":/g,'"east": ').replace(/"west":/g,'"west": ').replace(/"down":/g,'"down": ').replace(/"up":/g,'"up":   ').replace(/"to":/g,'"to":  ').replace(/"rotation":/g,'"rotation": ');
+        
+        }
+        
+    }
+    
+}
+
+/*------------------------------------*\
+    timeline tab functions
+\*------------------------------------*/
+
+activeFrame = undefined;
+
+function loadTimeline(framesList) {
+    
+    var timeline = document.getElementById('timeline');
+    while (timeline.firstChild) timeline.removeChild(timeline.firstChild);
+    FL = framesList;
+    
+    var load = true;
+    if (framesList[0] == undefined) {
+        load = false
+    }
+    for ( var i = 0; i < framesList.length; i++) {
+        if (framesList[i] == undefined) {
+            load = false
+        }
+    }
+    
+    animDuration = 0;
+    
+    if (load) {
+        
+        texture_dimensions = [];
+        
+        for (var i = 0; i < framesList.length; i++ ) {
+            
+            var current = framesList[i];
+            var frame = document.createElement('div');
+            frame.className = 'timeline_section';
+            frame.id = 'edit' + current['id'];
+            frame.setAttribute('style', 'height: ' + (42 * current['delay']) + 'px;');
+            frame.setAttribute('onclick', "selectFrame('" + 'edit' + current['id'] + "')");
+            frame.setAttribute('data-delay', current['delay']);
+            frame.setAttribute('data-name', current['name']);
+            frame.setAttribute('data-index', i);
+            frame.setAttribute('data-texture', current['texture']);
+            frame.setAttribute('data-model', current['model']);
+            var name = document.createElement('span');
+            name.appendChild(document.createTextNode(current['name']));
+            frame.appendChild(name);
+            
+            timeline.appendChild(frame);
+            
+            animDuration += current['delay'];
+            
+            var texturebuffer = new Image();
+            texturebuffer.onload = function() {
+                texture_dimensions.push({'width': this.width, 'height': this.height});
+                texture_totalwidth += this.width;
+                if (this.height > texture_maxheight) { texture_maxheight = this.height;}
+            }
+            texturebuffer.src = current['texture'];
+            
+            if (i==0) {
+                var modelname = document.getElementById('modelName');
+                var p = modelname.parentNode;
+                p.removeChild(modelname);
+                var modelname = document.createElement('input');
+                modelname.setAttribute('type', 'text');
+                modelname.setAttribute('id', 'modelName');
+                modelname.setAttribute('style', 'width: 14em;');
+                modelname.setAttribute('value', current['name']);
+                p.appendChild(modelname);
+                
+                var modelreplace = document.getElementById('replaceBlock');
+                var p = modelreplace.parentNode;
+                p.removeChild(modelreplace);
+                var modelreplace = document.createElement('input');
+                modelreplace.setAttribute('type', 'text');
+                modelreplace.setAttribute('id', 'replaceBlock');
+                modelreplace.setAttribute('style', 'width: 14em; margin-top: 17px;');
+                modelreplace.setAttribute('value', 'sponge');
+                p.appendChild(modelreplace);
+            }
+            
+        }
+        
+        document.getElementById('time-display').innerHTML = 'Animation Duration : ' + animDuration;
+        
+        updateTotalLoaded()
+        updateAnimDuration()
+        selectFrame('edit0');
+        
+    } else {
+        
+        var frame = document.createElement('div');
+        frame.className = 'timeline_section';
+        frame.setAttribute('style', 'height: 42px;');
+        var name = document.createElement('span');
+        name.appendChild(document.createTextNode("Invalid frame list"));
+        frame.appendChild(name);
+        timeline.appendChild(frame);
+        
+        document.getElementById('right-wrapper').setAttribute('style', 'display: none;');
+        
+    }
+    
+}
+
+function selectFrame(id) {
+    
+    var clearselect = document.querySelector('.timeline_section.selected');
+    if (clearselect != null) {clearselect.setAttribute('class', 'timeline_section');}
+    
+    var selectedframe = document.getElementById(id);
+    selectedframe.className = 'timeline_section selected';
+    activeFrame = selectedframe.id;
+    
+    
+    document.getElementById('right-wrapper').setAttribute('style', 'display: inline-block;');
+    
+    var framename = document.getElementById('framenameinthetimeline');
+    framename.innerHTML = selectedframe.getAttribute('data-name');
+    document.getElementById('frametextureinthetimeline').setAttribute('src', selectedframe.getAttribute('data-texture'));
+    var delaydisplay = document.getElementById('framedurationinthetimeline');
+    delaydisplay.innerHTML = selectedframe.getAttribute('data-delay');
+    document.getElementById('remove1').setAttribute('onclick', "changeDelayFor('" + activeFrame + "', '-1')");
+    document.getElementById('add1').setAttribute('onclick', "changeDelayFor('" + activeFrame + "', '+1')");
+    var framejson = document.getElementById('framejsoninthetimeline');
+    framejson.innerHTML = selectedframe.getAttribute('data-model');
+    
+    document.getElementById('moveUp').setAttribute('onclick', "up('" + activeFrame + "');");
+    document.getElementById('moveDown').setAttribute('onclick', "down('" + activeFrame + "');");
+    document.getElementById('duplicate').setAttribute('onclick', "duplicate('" + activeFrame + "');");
+    document.getElementById('delete').setAttribute('onclick', "del('" + activeFrame + "');");
+    
+}
+
+function changeDelayFor(frame, mode) {
+    
+    var f = document.getElementById(frame);
+    var delay = 0;
+    
+    if (mode == '-1' && parseInt(f.getAttribute('data-delay')) > 1) {
+        delay = -1;
+    } else if (mode == '+1') {
+        delay = 1;
+    }
+    
+    f.setAttribute('data-delay', parseInt(f.getAttribute('data-delay')) + delay);
+    f.setAttribute('style', 'height: ' + (42 * parseInt(f.getAttribute('data-delay'))) + 'px;');
+    
+    var delaydisplay = document.getElementById('framedurationinthetimeline');
+    delaydisplay.innerHTML = f.getAttribute('data-delay');
+    
+    updateAnimDuration()
+}
+
+function updateAnimDuration() {
+    var f = document.querySelectorAll('#timeline .timeline_section');
+    var duration = 0;
+    
+    for (var k = 0; k < f.length; k++ ) {
+        duration += parseInt(f[k].getAttribute('data-delay'));
+    }
+    
+    document.getElementById('time-display').innerHTML = 'Animation duration : ' + duration;
+    animDuration = duration;
+}
+
+function updateTotalLoaded() {
+    var f = document.querySelectorAll('#timeline .timeline_section')
+    document.getElementById('framesCount').innerHTML = 'Loaded : ' + f.length;
+    document.getElementById('framesCount2').innerHTML = 'Loaded : ' + f.length;
+}
+
+function up(frame) {
+    var tl = document.getElementById('timeline');
+    var f = document.getElementById(frame);
+    var fc = tl.firstChild;
+    
+    if (fc.id != frame) {
+        var previous = f.previousSibling;
+        tl.removeChild(f);
+        tl.insertBefore(f,previous);
+    }
+}
+
+function down(frame) {
+    var tl = document.getElementById('timeline');
+    var f = document.getElementById(frame);
+    var lc = tl.lastChild;
+    
+    if (lc.id != frame) {
+        var next = f.nextSibling;
+        tl.removeChild(next);
+        tl.insertBefore(next,f);
+    }
+}
+
+counter = 0;
+
+function duplicate(frame) {
+    var tl = document.getElementById('timeline');
+    var f = document.getElementById(frame);
+    
+    var f2 = f.cloneNode(true);
+    f2.id = frame + counter;
+    f2.setAttribute('onclick',"selectFrame('" + frame + counter + "')");
+    tl.insertBefore(f2,f);
+    
+    counter++;
+    selectFrame(frame);
+    updateAnimDuration();
+    updateTotalLoaded();
+}
+
+function del(frame) {
+    var tl = document.getElementById('timeline');
+    var lc = tl.lastChild;
+    var l = document.querySelectorAll('#timeline .timeline_section');
+    l = l.length;
+    
+    if (l > 1 && lc.id != frame) {
+        
+        var f = document.getElementById(frame);
+        var next = f.nextSibling;
+        selectFrame(next.id);
+        var parent = f.parentNode;
+        parent.removeChild(f);
+        updateTotalLoaded();
+        updateAnimDuration();
+        
+    } else if (l > 1 && lc.id == frame) {
+        
+        var f = document.getElementById(frame);
+        var previous = f.previousSibling;
+        selectFrame(previous.id);
+        var parent = f.parentNode;
+        parent.removeChild(f);
+        updateTotalLoaded();
+        updateAnimDuration();
+        
+    } else {
+        
+        var f = document.getElementById(frame);
+        var parent = f.parentNode;
+        parent.removeChild(f);
+        updateTotalLoaded();
+        updateAnimDuration();
+        
+        var noframe = document.createElement('div');
+        noframe.className = 'timeline_section';
+        noframe.setAttribute('style', 'height: 42px;');
+        var name = document.createElement('span');
+        name.appendChild(document.createTextNode('No frame loaded'));
+        noframe.appendChild(name);
+        timeline.appendChild(noframe);
+        
+        document.getElementById('right-wrapper').setAttribute('style', 'display: none;');
+        animDuration = 0;
+    }
+}
+
+/*------------------------------------*\
+    Generated files
+\*------------------------------------*/
+
+texture_dimensions = [];
+texture_totalwidth = 0;
+texture_maxheight = 0;
+
+output = {}
+
+function createfiles() {
+    
+    if (FL[0] != undefined) {
+        
+        var replaceblock = document.getElementById('replaceBlock');
+        model_replace = replaceblock.value;
+        
+        var nameinput = document.getElementById('modelName');
+        var animatedTexture = nameinput.value;
+        var model_json = JSON.parse(FL[0]['model']);
+        model_name = animatedTexture;
+        texture_totalpixels = texture_maxheight * texture_totalwidth;
+        
+        model_json['textures'] = {'texture': 'blocks/' + animatedTexture};
+        model_json['__comment'] = 'This model has been generated using Fizzy\'s animated model generator';
+        
+        texture_size = 16;
+        
+        while (Math.pow(texture_size, 2) < texture_totalpixels) {
+            texture_size = texture_size*2;
+        }
+        
+        var canvas_workspace = document.createElement('canvas');
+        canvas_workspace.setAttribute('width', texture_size);
+        canvas_workspace.setAttribute('height', texture_size*FL.length);
+        
+        var ctx = canvas_workspace.getContext('2d');
+        
+        model_json['elements'] = [];
+        
+        var width = 0;
+        var height = 0;
+        var localmaxheight = 0;
+        
+        for (var i = 0; i < FL.length; i++ ) {
+            var frameElements = JSON.parse(FL[i]['model'])['elements'];
+            var frameTexture = new Image();
+            
+            frameTexture.setAttribute('src',FL[i]['texture']);
+            ctx.drawImage(frameTexture,width,height + texture_size * i);
+            
+            for (var j = 0; j < frameElements.length; j++ ) {
+                
+                var element = frameElements[j];
+                var faces = element['faces'];
+                
+                for (key in faces) {
+                    var face = faces[key];
+                    face['uv'][0] = (face['uv'][0] * (frameTexture.width/16) + width) / (texture_size/16);
+                    face['uv'][2] = (face['uv'][2] * (frameTexture.width/16) + width) / (texture_size/16);
+                    
+                    face['uv'][1] = (face['uv'][1] * (frameTexture.height/16) + height) / (texture_size/16);
+                    face['uv'][3] = (face['uv'][3] * (frameTexture.height/16) + height) / (texture_size/16);
+                    
+                    face['texture'] = '#texture';
+                    
+                    element['faces'][key] = face;
+                }
+                
+                model_json['elements'].push(element);
+                
+            }
+            
+            if (localmaxheight < texture_dimensions[i]['height']) {
+                localmaxheight = texture_dimensions[i]['height'];
+            }
+            
+            width += texture_dimensions[i]['width'];
+            if (width >= texture_size) {
+                height += localmaxheight;
+                width = 0;
+            }
+            
+        }
+        
+        var tl = document.getElementById('timeline');
+        var allf = document.querySelectorAll('#timeline .timeline_section');
+        mcmeta = {'animation':{'frames':[]}};
+        
+        for (var k = 0; k < allf.length; k++ ) {
+            var c = allf[k];
+            mcmeta['animation']['frames'].push({'index': parseInt(c.getAttribute('data-index')),'time': parseInt(c.getAttribute('data-delay'))});
+        }
+        
+        output['model'] = JSON.stringify(model_json, cleanJson, 4).replace(/\\"/g, '"').replace(/,/g, ', ').replace(/\}clean"/g, ' }').replace(/"clean\{/g, '{ ').replace(/\]clean"/g, ' ]').replace(/"clean\[/g, '[ ').replace(/"\:"/g, '": "').replace(/"\:\[/g, '": [').replace(/"east":/g,'"east": ').replace(/"west":/g,'"west": ').replace(/"down":/g,'"down": ').replace(/"up":/g,'"up":   ').replace(/"to":/g,'"to":  ').replace(/"rotation":/g,'"rotation": ');
+        output['texture'] = canvas_workspace.toDataURL('image/png');
+        output['mcmeta'] = JSON.stringify(mcmeta).replace(/\"animation\":/g,'\n    "animation": ').replace(/\"frames\":/g,'\n        "frames": ').replace(/\{\"index":/g,'\n            {"index": ').replace(/\"time\":/g,' "time": ').replace(/\]\}\}/g,'\n        ]\n    }\n}');
+    }
+}
+
+function cleanJson(key, value) {
+    var special = ['from', 'to', 'north', 'east', 'south', 'west', 'up', 'down', 'rotation', 'translation', 'scale', 'predicate', 'model'];
+    if (special.indexOf(key) >= 0) {
+        return 'clean' + JSON.stringify(value) + 'clean';
+    } else {
+        return value;
+    }
+}
+
+function loadLastTab() {
+    document.getElementById('log1').innerHTML = 'Animated model successfully generated';
+    document.getElementById('log2').innerHTML = 'Model name: ' + model_name;
+    var out = document.getElementById('lastTab');
+    out.setAttribute('style', 'display: block');
+    var pb = document.getElementById('problem');
+    pb.setAttribute('style', 'display: block');
+    
+    var outputmodel = document.querySelector('#downloadmodel a');
+    outputmodel.setAttribute('href','data:,' + encodeURI(output['model']));
+    outputmodel.setAttribute('download', model_replace + '.json');
+    document.getElementById('previewjson').innerHTML = output['model'];
+    document.querySelector('#downloadmodel h4').innerHTML = model_replace + '.json';
+    
+    var outputtexture = document.querySelector('#downloadtexture a');
+    outputtexture.setAttribute('href',output['texture']);
+    outputtexture.setAttribute('download', model_name + '.png');
+    var previewtexture = document.getElementById('previewtexture');
+    previewtexture.setAttribute('src', output['texture']);
+    document.querySelector('#downloadtexture h4').innerHTML = model_name + '.png';
+    
+    var outputmcmeta = document.querySelector('#downloadmcmeta a');
+    outputmcmeta.setAttribute('href','data:,' + encodeURI(output['mcmeta']));
+    outputmcmeta.setAttribute('download', model_name + '.png.mcmeta');
+    document.getElementById('previewmcmeta').innerHTML = output['mcmeta'];
+    document.querySelector('#downloadmcmeta h4').innerHTML = model_name + '.png.mcmeta';
+    
+    
+    document.getElementById("jsonmodelnameend").innerHTML = model_replace + '.json';
+    document.getElementById("texturenameend").innerHTML = model_name + '.png';
+    document.getElementById("mcmetanameend").innerHTML = model_name + '.png.mcmeta';
+}
+
+/*------------------------------------*\
+    tabs sliding events
+\*------------------------------------*/
+
+//organize button
+function process() {
+    document.getElementById('process').setAttribute( 'onclick', 'back()');
+    document.getElementById('process').innerHTML = 'Back';
+    document.getElementById('main_block').className = 'output';
+    document.getElementById('inputscover').className = 'covered';
+    document.getElementById('generatecover').className = 'covered';
+    document.getElementById('outputscover').className = '';
+    document.getElementById('timeline').setAttribute('style', 'display: inline-block;');
+    
+    mergeTextures()
+    
+    var framesList = generate();
+    
+    loadTimeline(framesList);
+}
+
+//back from the timeline tab
+function back() {
+    document.getElementById('process').setAttribute('onclick', 'process()');
+    document.getElementById('process').innerHTML = 'Settings';
+    document.getElementById('main_block').className = '';
+    document.getElementById('inputscover').className = '';
+    document.getElementById('outputscover').className = 'covered';
+    
+    texture_dimensions = [];
+    texture_totalwidth = 0;
+    texture_maxheight = 0;
+}
+
+//generate button
+function generated() {
+    document.getElementById('generate').setAttribute( 'onclick', 'geback()');
+    document.getElementById('generate').innerHTML = 'Back';
+    document.getElementById('main_block').className = 'generate';
+    document.getElementById('outputscover').className = 'covered';
+    document.getElementById('generatecover').className = '';
+    createfiles();
+    
+    if (animDuration > 0) {
+        loadLastTab()
+    } else {
+        document.getElementById('log1').innerHTML = 'No frame loaded';
+        document.getElementById('log2').innerHTML = '';
+        var out = document.getElementById('lastTab');
+        out.setAttribute('style', 'display: none');
+        var pb = document.getElementById('problem');
+        pb.setAttribute('style', 'display: none');
+    }
+}
+
+//back from the generated tab
+function geback() {
+    document.getElementById('generate').setAttribute('onclick', 'generated()');
+    document.getElementById('generate').innerHTML = 'Finish';
+    document.getElementById('main_block').className = 'output';
+    document.getElementById('inputscover').className = 'covered';
+    document.getElementById('outputscover').className = '';
+    document.getElementById('generatecover').className = 'covered';
+    
+    output = {}
+}
+        </script>
+    </body>
+</html>
